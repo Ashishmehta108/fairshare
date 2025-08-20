@@ -6,7 +6,7 @@ const userController = require('../controllers/userController');
 
 // @route   GET api/users/me
 // @desc    Get user profile
-// @access  Private
+// @access  Private 
 router.get('/me', auth, userController.getUserProfile);
 
 // @route   POST api/users/friends

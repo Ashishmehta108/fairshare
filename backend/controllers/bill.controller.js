@@ -1,11 +1,11 @@
 import Bill from "../models/Bill.Model.js";
 export const createBill = async (req, res) => {
     try {
-        const { image, totalAmount, friends } = req.body;
+        const { imageUrl, totalAmount, friends } = req.body;
 
         const newBill = new Bill({
             userId: req.user.id,
-            image,
+            imageUrl,
             totalAmount,
             friends: friends.map(friend => ({
                 friendId: friend.friendId,
@@ -38,23 +38,19 @@ export const getBills = async (req, res) => {
 export const updateBillStatus = async (req, res) => {
     try {
         const { friendId, status } = req.body;
-
         const bill = await Bill.findById(req.params.id);
         if (!bill) {
             return res.status(404).json({ message: 'Bill not found' });
         }
-
         if (bill.userId.toString() !== req.user.id) {
             return res.status(401).json({ message: 'User not authorized' });
         }
         const friendIndex = bill.friends.findIndex(
             f => f.friendId.toString() === friendId
         );
-
         if (friendIndex === -1) {
             return res.status(404).json({ message: 'Friend not found in this bill' });
         }
-
         bill.friends[friendIndex].status = status;
         await bill.save();
 

@@ -6,7 +6,7 @@ const BillSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    image: {
+    imageUrl: {
         type: String,
         required: true
     },

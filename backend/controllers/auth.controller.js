@@ -12,7 +12,7 @@ export const signup = async (req, res) => {
         user = new User({
             name,
             email,
-            password: await bcrypt.hash(password, 10)
+            password
         });
         await user.save();
         const payload = {
@@ -35,11 +35,14 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(email, password)
         const user = await User.findOne({ email });
+        console.log(user)
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log(isMatch)
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
@@ -65,6 +68,7 @@ export const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');

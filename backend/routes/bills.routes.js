@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const { check } = require('express-validator');
-const auth = require('../middleware/auth');
-const billController = require('../controllers/billController');
+
+import { check } from 'express-validator';
+import { createBill, getBills, updateBillStatus } from '../controllers/bill.controller.js';
+import auth from '../middleware/auth.middleware.js';
+import { Router } from 'express';
+const billRouter = Router();
 
 // @route   POST api/bills
 // @desc    Create a new bill
 // @access  Private
-router.post(
+billRouter.post(
   '/',
   [
     auth,
@@ -16,18 +17,18 @@ router.post(
       check('friends', 'Friends array is required').isArray({ min: 1 })
     ]
   ],
-  billController.createBill
+  createBill
 );
 
 // @route   GET api/bills
 // @desc    Get all bills for the logged-in user
 // @access  Private
-router.get('/', auth, billController.getBills);
+billRouter.get('/', auth, getBills);
 
 // @route   PATCH api/bills/:id
 // @desc    Update bill payment status
 // @access  Private
-router.patch(
+billRouter.patch(
   '/:id',
   [
     auth,
@@ -37,7 +38,7 @@ router.patch(
         .isIn(['paid', 'pending'])
     ]
   ],
-  billController.updateBillStatus
+  updateBillStatus
 );
 
-module.exports = router;
+export default billRouter;

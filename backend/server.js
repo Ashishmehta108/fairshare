@@ -1,40 +1,31 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+import express, { urlencoded } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
+dotenv.config();
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const billRoutes = require('./routes/bills');
+
+import authRoutes from './routes/auth.routes.js';
+import userRoutes from './routes/users.routes.js';
+import billRoutes from './routes/bills.routes.js';
+import connectToDb from './db/db.js';
+
 
 const app = express();
-
-// Middleware
 app.use(cors());
+app.use(morgan('dev'));
 app.use(express.json());
+app.use(urlencoded({ extended: true }));
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
-  })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+connectToDb();
 
-// Define Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bills', billRoutes);
 
-// Basic route for testing
 app.get('/', (req, res) => {
   res.send('FairShare API is running...');
 });
-
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
